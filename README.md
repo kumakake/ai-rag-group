@@ -19,7 +19,7 @@ AIを活用したPDF文書検索システムです。LangChain + OpenAI Embeddin
 
 | コンポーネント     | 説明 |
 |------------------|------|
-| `rag-server/`     | Node.js + Express のバックエンド。PDF解析・FAISSベクトル登録・質問応答APIなど |
+| `server/`     | Node.js + Express のバックエンド。PDF解析・MemoryVectorStore登録・質問応答APIなど |
 | `rag-client/`     | React + Vite のフロントエンド。PDF管理、質問入力、管理者画面など |
 | `postgresql`      | ユーザー・PDF情報・ログの保存 |
 | `docker-compose.yml` | 全体の起動・連携を管理 |
@@ -55,7 +55,7 @@ docker compose up --build
 
 ## 🧠 技術スタック
 - Frontend: React + TypeScript + TailwindCSS + Vite
-- Backend: Node.js + Express + LangChain + FAISS
+- Backend: Node.js + Express + LangChain + MemoryVectorStore
 - PDF解析: pdfjs-dist（worker不要構成）
 - Auth: Express-session + PostgreSQL
 - DB: PostgreSQL（初期化は /docker-entrypoint-initdb.d にて自動）
