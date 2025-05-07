@@ -1,0 +1,84 @@
+import { useEffect, useState } from "react";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+type PdfItem = {
+  id: string;
+  name: string;
+  originalName?: string;
+};
+
+export default function PdfList() {
+  const [pdfs, setPdfs] = useState<PdfItem[]>([]);
+  const [status, setStatus] = useState("");
+
+  const fetchPdfs = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/pdfs`);
+      const data = await res.json();
+      if (data.success) {
+        setPdfs(data.files);
+      } else {
+        setStatus("⚠️ 一覧の取得に失敗しました");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("⚠️ 通信エラー");
+    }
+  };
+
+  const deletePdf = async (filename: string) => {
+    if (!confirm(`"${filename}" を削除してよろしいですか？`)) return;
+    try {
+      const res = await fetch(`${API_BASE}/pdfs/${filename}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus(`🗑️ 削除成功: ${filename}`);
+        fetchPdfs(); // 再取得
+      } else {
+        setStatus("❌ 削除失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("⚠️ 通信エラー");
+    }
+  };
+
+  useEffect(() => {
+    fetchPdfs();
+  }, []);
+
+  return (
+    <div style={{ marginTop: "2rem" }}>
+      <h2>📑 登録済みPDF一覧</h2>
+      {status && <p>{status}</p>}
+      {pdfs.length === 0 ? (
+        <p>📭 登録されたPDFはまだありません。</p>
+      ) : (
+        <ul>
+  {pdfs.map((pdf) => (
+    <li key={pdf.id} style={{ marginBottom: "0.5rem" }}>
+      📄 {pdf.originalName || pdf.name}
+      <button
+        onClick={() => deletePdf(pdf.id)}
+        style={{
+          marginLeft: "1rem",
+          color: "white",
+          backgroundColor: "red",
+          border: "none",
+          padding: "0.2rem 0.5rem",
+          borderRadius: "4px",
+        }}
+      >
+        削除
+      </button>
+    </li>
+  ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+

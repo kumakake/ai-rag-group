@@ -1,0 +1,40 @@
+services:
+  rag-server:
+    build:
+      context: ./server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server/uploads:/app/uploads
+      - ./server/vectorstores:/app/vectorstores
+    env_file:
+       - .env                # ← ★ここに追加！
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  rag-client:
+    build:
+      context: ./rag-client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./rag-client:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: raguser
+      POSTGRES_PASSWORD: ragpass
+      POSTGRES_DB: ragdb
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

@@ -1,0 +1,8 @@
+/pgdata/*
+/server/vectorstores/*
+/server/uploads/*
+/server/node_modules/*
+/rag-client/node_modules/*
+/rag-client/dist/*
+memo.txt
+.env
